@@ -18,7 +18,7 @@ end ClockCounter;
 architecture Behavioral of ClockCounter is
     component Counter60
         port(
-            clk : in std_logic;a
+            clk : in std_logic;
             rst : in std_logic;
             en  : in std_logic;
             fout: out std_logic_vector(5 downto 0);
