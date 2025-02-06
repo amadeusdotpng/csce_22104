@@ -54,7 +54,7 @@ begin
         wait for clk_period * 13;
         
         en <= '0';
-        wait for clk_period;
+        wait for clk_period * 2;
         
         rst <= '1';
         wait for clk_period;
