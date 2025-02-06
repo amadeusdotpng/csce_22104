@@ -1,0 +1,293 @@
+\documentclass[11pt]{report}
+\usepackage{textcomp}
+
+\usepackage{titlesec}
+\titlespacing*{\section}
+{0pt}{\baselineskip}{0em}
+\titlespacing*{\subsection}
+{0pt}{\baselineskip}{0em}
+
+\usepackage{geometry}
+\geometry{left=1in, right=1in, top=1in, textheight=9in}
+
+\usepackage{enumitem}
+\newlist{steps}{enumerate}{1}
+\setlist[steps, 1]{wide=0pt, leftmargin=\parindent, label=Step \arabic*:}
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+    \fancyhf{} % clear all header and footer fields
+    \fancyfoot[C]{\sffamily\fontsize{.75em}{.75em}\selectfont\thepage} % except the center
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+\usepackage{graphicx}
+\graphicspath{ {./media/} }
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{inlinebg}{rgb}{0.95, 0.95, 0.95}
+\newmintinline[vhdl]{vhdl}{fontsize=\small, bgcolor=inlinebg}
+
+% make fancy title page
+\makeatletter
+\newcommand{\@labsection}{000}
+\newcommand{\labsection}[1]{
+    \renewcommand{\@labsection}{#1}
+}
+
+\newcommand{\@labnumber}{0}
+\newcommand{\labnumber}[1]{
+    \renewcommand{\@labnumber}{#1}
+}
+
+\newcommand{\@shortsubmitted}{1/1/70}
+\newcommand{\shortsubmitted}[1]{
+    \renewcommand{\@shortsubmitted}{#1}
+}
+
+\renewcommand{\maketitle}{
+    \newgeometry{left=1in, right=1in, top=1.75in, textheight=7.5in}
+    \singlespacing
+    \begin{center}
+        {\huge \bf CSCE 22104} \\
+        \vspace{2.5em}
+        {\Large \bf Lab Report} \\
+        \vspace{2em}
+        \noindent\rule{20em}{0.4pt} \\
+        \vspace{1em}
+        {\Large \@author} \\
+        \vspace{.75em}
+        {\normalsize ID: 011019116} \\
+        \vspace{.75em}
+        {\normalsize Lab Section \@labsection} \\
+        \vspace{.75em}
+        {\normalsize Lab \@labnumber} \\
+
+        
+    \end{center}
+    \lfoot{\footnotesize \textit{University of Arkansas \\ EECS Department}}
+    \rfoot{\footnotesize \textsl{\@shortsubmitted}}
+    \newpage
+    \restoregeometry
+}
+
+\makeatother
+
+
+% TEXTWIDTH = 100
+\begin{document}
+\title{Lab Report 1}
+\author{Brent Marcus Orlina}
+
+\labsection{001}
+\labnumber{1}
+
+\shortsubmitted{2/5/25}
+
+\maketitle
+
+\section*{Introduction}
+This lab's goal was to create a component, ``10-Counter,'' in VHDL that counts from 0 to 9 that
+increments during the rising edge of a clock cycle. The counter also loops back to 0 after
+reaching 9. The second goal of this lab was to create a clock component that displays the hours,
+minutes, and seconds and increments by one second during the rising edge of a clock cycle. The clock
+also loops back to displaying all zeroes after reaching 24 hours.
+
+\section*{Approach}
+For the 10-Counter component, there are three 1-bit input ports, \verb|clk|, \verb|rst|, and
+\verb|en| and a 4-bit output port, \verb|out|. When \verb|clk| is in a rising edge and \verb|en| is
+active, \verb|out| is incremented. However, when \verb|rst| is active, it overrides \verb|en| and
+synchronously resets \verb|out| to 0.
+
+To implement this a process sensitive to all three input ports is used. \verb|clk| is checked if it
+is in a rising edge with \vhdl{clk'event and clk = '1'}. If the condition is satisfied, \verb|rst|
+is checked if it is active with \vhdl{rst = '1'}. If it is active, a 4-bit signal \verb|count| is
+set to 0, with \vhdl{count <= "0000"}. Otherwise, \verb|en| is checked if it is active. If it is,
+the signal \verb|count| is set back to 0 if it reaches 10, otherwise it is incremented with
+\vhdl{count <= count + 1}. The library \verb|IEEE.std_logic_unsigned.all| is required to be able to
+increment \verb|count| by using addition. Outside of the process, the signal \verb|count| is
+connected to \verb|out| with \vhdl{out <= count}. The signal \verb|count| is necessary since it is
+illegal to set an output port to a value that uses that same output port in VHDL.
+
+For the clock component, there are three 1-bit input ports, \verb|clk|, \verb|rst|, and \verb|en|, 
+one 1-bit output port \verb|cout|, one 4-bit output port \verb|H| and two 5-bit output ports
+\verb|M| and \verb|S|. Similar to the 10-Counter, when \verb|clk| is in a rising edge and \verb|en|
+is active, the output port \verb|S| is incremented. When \verb|S| reaches 60, it is set back to 0
+and the output port \verb|M| is incremented. Similarly, when \verb|M| reaches 60, it is set back to
+0 and the output port \verb|H| is incremented. Finally, when \verb|H| reaches 24, it is set back to
+0. \verb|cout| is active when \verb|H| is incremented to 23.
+
+To implement this, two more components are made, ``60-Counter'' and ``24-Counter.'' These counters
+use ``10-Counter'' as the base. The two other counters instead count up to 60 and 24 respectively.
+Another difference is that these counters have an extra 1-bit output port \verb|cout|. These are
+used to chain the counters together. In the clock, the 60-Counter responsible for \verb|S| activates
+its \verb|cout| when it would be incremented to 59. The \verb|cout| is then connected to the
+60-Counter responsible for \verb|M|'s \verb|en| input port. This is so that in the next cycle, when
+\verb|S| is incremented to 60 and set back to 0, \verb|M| is incremented, since there are 60 seconds
+in a minute. This is also the same for the \verb|M|'s 60-Counter and \verb|H|'s 24-Counter.
+
+In the clock component two instances of 60-Counter and one instance of 24-Counter is created. The
+clock's \verb|clk| and \verb|rst| input ports are connected to each of the counter's \verb|clk| and
+\verb|rst| input ports. The clock's \verb|en| is connected to the first 60-Counter's \verb|en|. The
+first 60-Counter's \verb|out| is connected to \verb|S| and its \verb|cout| is connected to the
+second 60-Counter's \verb|en| using a signal \verb|sec_carry|. The second 60-counter's \verb|cout|
+is connected to a signal \verb|min_carry| and its \verb|out| is connected to \verb|M|. The signals
+\verb|sec_carry| and \verb|min_carry| are connected to the 24-Counter's \verb|en| through an AND
+gate. This is because an hour should only increment once both the second and minute gets incremented
+to 60. If only the \verb|min_carry| signal was connected, it would increment the 24-Counter for 60
+cycles when the second 60-Counter is incremented to 59 producing the wrong behavior.
+
+\section*{Experimentation}
+The components' behaviors were tested using hand-crafted testbenches. The testbench for the
+10-Counter tested all possible combinations of the ports \verb|en| and \verb|rst| signals as well as
+testing the behavior of the counter incrementing from 9. The counter worked as expected and
+incremented during the rising-edge of every clock cycle when \verb|en| was active. The counter
+looped back to 0 once it incremented from 9. The reset behavior worked as expected with the counter
+resetting back to 0 when \verb|rst| was active and taking priority over \verb|en|.
+
+The testbench for the clock component tested all possible combinations of the \verb|en| and
+\verb|rst| signals. It also tested the behavior of ports \verb|S| and \verb|M| incrementing during
+the correct times as well as looping back to 0 when they've reached their defined maximum limit. The
+behavior of port \verb|H| was only tested for incrementing during the correct times. The component
+worked as expected and \verb|S| incremented during the rising edge of every clock cycle when
+\verb|en| was active. The port \verb|M| correctly incremented only when \verb|S| was incremented
+from 59 and looped back to 0. \verb|H| correctly incremented only when \verb|S| and \verb|M| were
+both incremented from 59 and looped back to 0. Similarly, the reset behavior worked as expected with
+\verb|S|, \verb|M|, and \verb|H| resetting back to 0 when \verb|rst| was active and taking priority
+over \verb|en|.
+
+\newpage
+
+\section*{Results \& Discussion}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{10-counter-waveform}
+    \caption{
+        The waveform for the 10-Counter component implementation.
+    }
+    \label{fig:10-counter-waveform}
+\end{figure}
+
+The 10-Counter works as expected as shown in figure \ref{fig:10-counter-waveform}. The counter has
+to first be reset, by activating signal \verb|Reset|, so that the output is initialized to 0. The
+signal \verb|Enable| is then enabled. It shows that the signal \verb|Output| increments during the
+rising edge of every clock cycle when \verb|Enable| is active. It also shows that the counter resets
+back to 0 it would increment to 10 in the 115th nanosecond. In the 150th nanosecond, \verb|Enable|
+deactivates and the counter correctly stops incrementing. In the 175th nanosecond, it shows that
+when \verb|Reset| is active, it synchronously resets the output back to 0. It can also be seen in
+the 215th nanosecond that when both \verb|rst| and \verb|en| are both active, \verb|rst| takes
+priority and sets \verb|output| to 0. 
+
+The testbench for this component is sufficient since it tests all the possible combinations of
+\verb|en| and \verb|rst|. It also checks the behavior of the clock when it is incremented from 9,
+with the expected behavior that it loops back to 0.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{clock-waveform_en_rst}
+    \caption{
+        Segment of the waveform for the clock component implementation. Shows how seconds part
+        increments. Also highlights that the clock is reset when {\texttt rst} is active.
+    }
+    \label{fig:clock-waveform_en_rst}
+\end{figure}
+
+The clock component also works as expected. Figure \ref{fig:clock-waveform_en_rst} shows the reset
+and enable functionality of the clock component. In the 36,915th nanosecond, the signal on the
+testbench \verb|Reset| activates and the clock correctly and synchronously resets all of its output
+ports back to 0. In the 36,970th nanosecond, the signal on the testbench \verb|Enable| deactivates
+and the clock correctly stops incrementing. In the 37,045th nanosecond, \verb|Reset| activates while
+\verb|Enable| is also active, and the clock resets back to 0, correctly taking priority over
+\verb|Enable|.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{clock-waveform_second_tick}
+    \caption{
+        Segment of the waveform for the clock component implementation. Shows how seconds part
+        increments. Also highlights that the clock is reset when {\texttt rst} is active.
+    }
+    \label{fig:clock-waveform_second_tick}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{clock-waveform_minute_tick}
+    \caption{
+        Segment of the waveform for the clock component implementation. Shows how seconds part
+        increments. Also highlights that the clock is reset when {\texttt rst} is active.
+    }
+    \label{fig:clock-waveform_minute_tick}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{clock-waveform_hour_tick}
+    \caption{
+        Segment of the waveform for the clock component implementation. Shows how seconds part
+        increments. Also highlights that the clock is reset when {\texttt rst} is active.
+    }
+    \label{fig:clock-waveform_hour_tick}
+\end{figure}
+
+In figure \ref{fig:clock-waveform_second_tick}, the seconds increments during the rising edge of
+every cycle when \verb|Enable| is on, which is the correct behavior. It also shows that the clock is
+set back to 0 when \verb|rst| is active. Figure \ref{fig:clock-waveform_minute_tick} shows that the
+\verb|Minutes| increments from 0 to 1 when the seconds is incremented from 59 back to 0. This is the
+correct behavior since there are 60 seconds in 1 minute. Similarly, figure
+\ref{fig:clock-waveform_hour_tick} shows that the \verb|Hours| increments from 0 to 1 when both the
+\verb|Minutes| and \verb|Seconds| increment from 59 back to 0 since there are 60 minutes in 1 hour.
+
+The testbench for the clock component is not completely sufficient. It tests the \verb|Reset| and
+\verb|Enable| functionality. It tests for the behaviors for when \verb|Seconds|, \verb|Minutes|, and
+\verb|Hours| should increment. It also tests for the behavior of when \verb|Seconds| and
+\verb|Minutes| increments from 59. However, \verb|Hours| incrementing from 23 and the output for
+\verb|Midnight|, which should be active when \verb|Hours| is incremented to 23, was not verified.
+This was because the software used was not able to simulate the clock cycling all the way to 24+
+hours worth of clock cycles.
+
+\section*{Conclusions}
+Both the 10-Counter component and clock component displayed the correct behavior during testing. The
+knowledge learned from this lab was learning counters worked and how they can be constructed as well
+as chaining different counters together. The skills practiced in this lab was learning how to build
+components behaviorally and structurally, and creating sufficient testbenches that test the
+components behaviors with different inputs. Debugging VHDL code was also an important skill
+practiced.
+
+% \newpage
+% 
+% \section*{References}
+% \noindent
+% [1]    Computer Organization 22104, EECS, University of Arkansas, “Lab 1,”  Sep. 17, 2024.
+% 
+% \noindent
+% [2]    Computer Organization 22104, EECS, University of Arkansas, “Lab 2,”  Sep. 24, 2024.
+% 
+% \newpage
+% 
+% \section*{Appendix}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{foo}
+%     \caption{
+%         Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur
+%         cupidatat.
+%     }
+%     \label{fig:foo}
+% \end{figure}
+% 
+% \newpage
+% 
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[height=0.4\textheight]{bar}
+%     \caption{Lorem ipsum something something shorter sentence}
+%     \label{fig:bar}
+% \end{figure}
+\end{document}
