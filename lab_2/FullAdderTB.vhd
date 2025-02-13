@@ -35,63 +35,63 @@ begin
     	A <= '0';
         B <= '0';
         CarryIn <= '0';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '0' report "Test 1/8: Incorrect Sum" severity error;
         assert CarryOut = '0' report "Test 1/8: Incorrect CarryOut" severity error;
         
         A <= '0';
         B <= '0';
         CarryIn <= '1';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '1' report "Test 2/8: Incorrect Sum" severity error;
         assert CarryOut = '0' report "Test 2/8: Incorrect CarryOut" severity error;
         
         A <= '0';
         B <= '1';
         CarryIn <= '0';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '1' report "Test 3/8: Incorrect Sum" severity error;
         assert CarryOut = '0' report "Test 3/8: Incorrect CarryOut" severity error;
         
         A <= '0';
         B <= '1';
         CarryIn <= '1';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '0' report "Test 4/8: Incorrect Sum" severity error;
         assert CarryOut = '1' report "Test 4/8: Incorrect CarryOut" severity error;
         
         A <= '1';
         B <= '0';
         CarryIn <= '0';
-        wait for 2ns;
-        assert Sum = '0' report "Test 5/8: Incorrect Sum" severity error;
+        wait for 10ns;
+        assert Sum = '1' report "Test 5/8: Incorrect Sum" severity error;
         assert CarryOut = '0' report "Test 5/8: Incorrect CarryOut" severity error;
         
         A <= '1';
         B <= '0';
         CarryIn <= '1';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '0' report "Test 6/8: Incorrect Sum" severity error;
         assert CarryOut = '1' report "Test 6/8: Incorrect CarryOut" severity error;
         
         A <= '1';
         B <= '1';
         CarryIn <= '0';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '0' report "Test 7/8: Incorrect Sum" severity error;
         assert CarryOut = '1' report "Test 7/8: Incorrect CarryOut" severity error;
         
         A <= '1';
         B <= '1';
         CarryIn <= '1';
-        wait for 2ns;
+        wait for 10ns;
         assert Sum = '1' report "Test 8/8: Incorrect Sum" severity error;
         assert CarryOut = '1' report "Test 8/8: Incorrect CarryOut" severity error;
         
         A <= '0';
         B <= '0';
         CarryIn <= '0';
-        wait for 2 ns;
+        wait for 10ns;
         
         stop;
     end process;
