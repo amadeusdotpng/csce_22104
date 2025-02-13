@@ -55,8 +55,8 @@ begin
     
     B_AND_Cin : GateAND
     port map(
-    	A => A,
-        B => B,
+    	A => B,
+        B => cin,
       	F => BCin_AND
     );
     
