@@ -2,13 +2,13 @@
 	random_array: .word 65, 55, 33, 9, 76
 	reverse_sorted_array: .word 32, 16, 8, 4, 2
 	almost_sorted_array: .word 2, 4, 8, 32, 16
-	sorted_array: .word, 2, 4, 8, 16, 32
+	sorted_array: .word 2, 4, 8, 16, 32
 	value_buffer_text_1: .asciiz "The data contained in the buffer at 0x"
 	value_buffer_text_2: .asciiz " is: "
 	value_buffer_text_separator: .asciiz "Ox"
 	text_newline: .asciiz "\n"
 
-.globl _start
+.global _start
 
 .text
 _start:
