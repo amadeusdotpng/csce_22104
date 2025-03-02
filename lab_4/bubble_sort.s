@@ -167,16 +167,29 @@ bubble_sort_done:
 main:
 	addiu $sp, $sp, -4
 	sw $ra, 0($sp)
+
 	# Lines to sort all four arrays are here, comment or uncomment as needed.
+	la $a0, random_array
+	# la $a0, reverse_sorted_array # Load address of array to be sorted into $s0
+	# la $a0, almost_sorted_array # Load address of array to be sorted into $s0
+	# la $a0, sorted_array # Load address of array to be sorted into $s0
+	li $a1, 5
+	jal print_buffer
+
 	la $a0, random_array # Load address of array to be sorted into $s0
 	# la $a0, reverse_sorted_array # Load address of array to be sorted into $s0
 	# la $a0, almost_sorted_array # Load address of array to be sorted into $s0
 	# la $a0, sorted_array # Load address of array to be sorted into $s0
 	li $a1, 5
 	jal bubble_sort
+
 	la $a0, random_array
+	# la $a0, reverse_sorted_array # Load address of array to be sorted into $s0
+	# la $a0, almost_sorted_array # Load address of array to be sorted into $s0
+	# la $a0, sorted_array # Load address of array to be sorted into $s0
 	li $a1, 5
 	jal print_buffer
+
 	lw $ra, 0($sp)
 	addiu $sp, $sp, 4
 	jr $ra
