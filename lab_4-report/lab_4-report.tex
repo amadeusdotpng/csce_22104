@@ -104,8 +104,6 @@ given index and the element after it is stored in the registers \verb|$a0| and \
 index has already been provided in the bubble sort algorithm. Then, the function is called using the
 jump-and-link instruction, \verb|jal|. 
 
-\newpage
-
 \section*{Approach}
 \begin{listing}[h!]
     \inputminted[
@@ -131,7 +129,7 @@ value in \verb|$t1| is stored into the memory address in \verb|$a0| and the valu
 stored into the memory address in \verb|$a1|. In \verb|compare_and_swap_exit|, it returns to the
 caller by jumping to the return address in \verb|$ra|.
 
-\begin{listing}[h!]
+\begin{listing}[!ht]
     \inputminted[
         frame=lines,
         breaklines,
@@ -144,7 +142,7 @@ caller by jumping to the return address in \verb|$ra|.
     \label{listing:bubble_sort}
 \end{listing}
 
-\begin{listing}[h!]
+\begin{listing}[!ht]
     \inputminted[
         frame=lines,
         breaklines,
@@ -171,45 +169,44 @@ provided for the \verb|compare_and_swap| function, it is finally called with the
 instruction.
 
 \section*{Experimentation}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+The bubble sort algorithm, therefore the function \verb|compare_and_swap| implementation as well,
+was tested by sorting an array containing random integers in random order and an array of powers of
+two in decreasing order. The bubble sort algorithm worked as expected and sorted each array in
+increasing order.
 
 \newpage
 
 \section*{Results \& Discussion}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{terminal_output-random_array}
+    \caption{
+        The output of the bubble sort algorithm written in MIPS given a random unsorted array before
+        and after the bubble sort
+    }
+    \label{fig:out-rand_array}
+\end{figure}
 
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{terminal_output-reverse_sorted_array}
+    \caption{
+        The output of the bubble sort algorithm written in MIPS given a reverse sorted array before
+        and after the bubble sort.
+    }
+    \label{fig:out-rev_array}
+\end{figure}
+The bubble sort algorithm works as expected. Figures \ref{fig:out-rand_array} and
+\ref{fig:out-rev_array} shows the arrays before and after the running the bubble sort algorithm,
+sorting in increasing order. Since the bubble sort displays the correct behavior, the
+\verb|compare_and_swap| function works correctly.
 
 \section*{Conclusions}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+The \verb|compare_and_swap| function works correctly. The knowledge learned from this lab was
+learning how to translate a function from C++ into MIPS assembly as well as correctly providing the
+expected arguments and calling the translated function. The skills practiced in this lab was writing
+and reading MIPS assembly.
+
 
 % \newpage
 % 
