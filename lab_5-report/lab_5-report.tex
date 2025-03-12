@@ -30,6 +30,12 @@
 \usepackage{setspace}
 \doublespacing
 
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{LightGray}{gray}{0.9}
+\newmintinline[asm]{asm}{fontsize=\small, bgcolor=LightGray}
+\newmintinline[cpp]{cpp}{fontsize=\small, bgcolor=LightGray}
+
 % make fancy title page
 \makeatletter
 \newcommand{\@labsection}{000}
@@ -96,22 +102,95 @@ fibonacci number can be expressed as the recurrence relation
 \end{align*}
 
 where $f_0 = 0$ and $f_1 = 1$. This can be expressed into C code as
-% C code coes here
 
-The program built should also prompt and read an integer from user input, allowing the user to
-choose the $n^{th}$ fibonacci number to be printed. 
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{c}{./media/fib.c}
+    \caption{An implementation of a fibonacci function in C.}
+    \label{listing:fib-c}
+\end{listing}
+
+Note that the C implementation, as shown in listing \ref{listing:fib-c} returns a $-1$ for inputs
+less than $0$, expressing that the fibonacci function is undefined for $n < 0$. The program built
+should also prompt and read an integer from user input, allowing the user to choose the $n^{th}$
+fibonacci number to be printed. 
 
 \newpage
 
 \section*{Approach}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+Since printing a prompt, reading an integer from user input, and printing the result of the
+fibonacci function is trivial, describing its implementation will be skipped. The implementation of
+the fibonacci function will be the main focus.
+
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{asm}{./media/fib-base_cases.s}
+    \caption{The base cases for the fibonacci function in MIPS assembly.}
+    \label{listing:fib-base_cases}
+\end{listing}
+
+Listing \ref{listing:fib-base_cases} shows the implementation for handling the base cases of the
+fibonacci function, as shown in listing \ref{listing:fib-c}. The register \verb|$a0| has the value
+of $n$. Line 4 branches to \verb|fib_ret_negative| if $n < 0$ and returns a $-1$. Similarly, line 5
+branches to \verb|fib_ret_zero| if $n = 0$ and a $0$. Both of these branches can be done using only
+one instruction by the use of the \verb|$zero| register. However, to check if $n = 1$, the program
+must load a $1$ to a register and compare \verb|$a0| to that register. In the program, it loads a
+$1$ to the \verb|$t0| register. Line 7 branches to \verb|fib_ret_one| if $n = \verb|$t0|$, or $n =
+1$, and returns $1$. If all the branches fail, then it must mean $n > 1$, thus the program can
+continue and handle the recursive case.
+
+\newpage
+
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{asm}{./media/fib-recursive.s}
+    \caption{Handling the recursive case for the fibonacci function in MIPS assembly.}
+    \label{listing:fib-recursive}
+\end{listing}
+
+Listing \ref{listing:fib-recursive} shows the recursive case for the fibonacci function. First, it
+creates a stack for two words, one for the return address, and another to store $n$ and the result
+of calling \verb|fib(n-1)|. The program needs to store $n$ in the stack since it is currently in
+the \verb|$a0| register, which can change after the first recursive call, since that call might also
+do a recursive call. Similarly, the result of \verb|fib(n-1)| must be stored in the stack since the
+function will return its result in the register \verb|$v0|, which can also change.
+
+After calling \verb|fib(n-1)|, as shown in lines 11 and 12, $n$ is loaded back into register
+\verb|$a0| since there is no guarantee that the \verb|$a0| register has remained the same. Then, the
+result of \verb|fib(n-1)|, currently in the \verb|$v0| regiser, is stored into the stack, where $n$
+was, since \verb|$v0| will change after calling \verb|fib(n-2)|. The program can store the result
+into memory where $n$ previously was since $n$ has already been loaded into the \verb|$a0| register,
+and it will no longer be used after the second recursive call.
+
+The recursive call \verb|fib(n-2)| is called and its result is in the \verb|$v0| register. All of
+the needed calls have been called and it is time for the function to return its result. The stack is
+restored by loading the result of \verb|fib(n-1)| onto the temporary register \verb|$t0| and loading
+the return address back to the \verb|$ra| register. Finally, the stack pointer is bumped back up to
+its original position.
+
+The result of \verb|fib(n-1)|, now stored in \verb|$t0|, and \verb|fib(n-2)|, still stored in
+\verb|$v0|, is added together to \verb|$v0| and the function finally returns. Thus, the fibonacci
+function is complete.
+
+
 
 \section*{Experimentation}
 Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
