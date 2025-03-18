@@ -190,48 +190,35 @@ The result of \verb|fib(n-1)|, now stored in \verb|$t0|, and \verb|fib(n-2)|, st
 \verb|$v0|, is added together to \verb|$v0| and the function finally returns. Thus, the fibonacci
 function is complete.
 
-
-
 \section*{Experimentation}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
-
-\newpage
+The fibonacci function was tested by first testing the base cases of the function, $n < 0$ and $n =
+0, 1$, and verifying that the function had the correct outputs. Then, the recursive case was tested
+and verifying that the function's output was correct through the website \verb|oeis.org|, which
+lists the $n^{th}$ fibonacci number up to 40. The $n$ chosen for testing was $25$.
 
 \section*{Results \& Discussion}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
-
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fib-terminal_output}
+    \caption{
+        The output of the program implemented in MIPS assemble when ran 4 times, with the cases of
+        $n$ equal to $-10$, $0$, $1$, and $25$ being tested.
+    }
+    \label{fig:fib-terminal_output}
+\end{figure}
+The fibonacci function works as expected. Figure \ref{fig:fib-terminal_output} shows the program
+being ran four times. The first case tests the behavior of the function when given a negative
+number, which is undefined. For the fibonacci function implemented, the behavior chosen was to
+output a $-1$, signifying that it is an invalid input. The next two cases, $n = 0$ and $1$, tests
+teh base cases of the function. It correctly outputs $0$ and $1$ for each input respectively. The
+last case calculates the the $25^{th}$ fibonacci number, which correctly outputs $75025$.
 
 \section*{Conclusions}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+The fibonacci function implemented in MIPS assembly works correctly. The knowledge learned from this
+lab was learning how to implement a recursive function, specifically recognizing the base cases of a
+recursive function and handling the creation of a stack to support recursion. It was also learned
+how to optimize the stack size by recognizing which variables are unused after a certain point,
+allowing the reuse of the variable's spot in the stack.
 
 % \newpage
 % 
