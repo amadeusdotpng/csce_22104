@@ -1,0 +1,249 @@
+\documentclass[11pt]{report}
+\usepackage{textcomp}
+
+\usepackage{titlesec}
+\titlespacing*{\section}
+{0pt}{\baselineskip}{0em}
+\titlespacing*{\subsection}
+{0pt}{\baselineskip}{0em}
+
+\usepackage{geometry}
+\geometry{left=1in, right=1in, top=1in, textheight=9in}
+
+\usepackage{enumitem}
+\newlist{steps}{enumerate}{1}
+\setlist[steps, 1]{wide=0pt, leftmargin=\parindent, label=Step \arabic*:}
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+    \fancyhf{} % clear all header and footer fields
+    \fancyfoot[C]{\sffamily\fontsize{.75em}{.75em}\selectfont\thepage} % except the center
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+\usepackage{graphicx}
+\graphicspath{ {./media/} }
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{LightGray}{gray}{0.9}
+% \newmintinline[vhdl]{vhdl}{fontsize=\small, bgcolor=LightGray}
+
+% make fancy title page
+\makeatletter
+\newcommand{\@labsection}{000}
+\newcommand{\labsection}[1]{
+    \renewcommand{\@labsection}{#1}
+}
+
+\newcommand{\@labnumber}{0}
+\newcommand{\labnumber}[1]{
+    \renewcommand{\@labnumber}{#1}
+}
+
+\newcommand{\@shortsubmitted}{1/1/70}
+\newcommand{\shortsubmitted}[1]{
+    \renewcommand{\@shortsubmitted}{#1}
+}
+
+\lfoot{\footnotesize \textit{University of Arkansas \\ EECS Department}}
+\rfoot{\footnotesize \textsl{\@shortsubmitted}}
+
+\renewcommand{\maketitle}{
+    \newgeometry{left=1in, right=1in, top=1.75in, textheight=8.25in}
+    \singlespacing
+    \begin{center}
+        {\huge \bf CSCE 22104} \\
+        \vspace{2.5em}
+        {\Large \bf Lab Report} \\
+        \vspace{2em}
+        \noindent\rule{20em}{0.4pt} \\
+        \vspace{1em}
+        {\Large \@author} \\
+        \vspace{.75em}
+        {\normalsize ID: 011019116} \\
+        \vspace{.75em}
+        {\normalsize Lab Section \@labsection} \\
+        \vspace{.75em}
+        {\normalsize Lab \@labnumber} \\
+    \end{center}
+    \newpage
+    \restoregeometry
+}
+
+\makeatother
+
+
+% TEXTWIDTH = 100
+\begin{document}
+\title{Lab Report 6}
+\author{Brent Marcus Orlina}
+
+\labsection{001}
+\labnumber{6}
+
+\shortsubmitted{3/19/25}
+
+\maketitle
+
+\section*{Introduction}
+This lab's goal was to create a 1-bit ALU component and create a 16-bit ALU component, using 1-bit
+components. The ALU components should support four operations: addition, subtraction, logical-and,
+and logical-or, using the opcodes \verb|00|, \verb|01|, \verb|10|, and \verb|11|, respectively. The
+components should also be asynchronous, i.e. the component does not depend on a clock.
+
+\section*{Approach}
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/ALU1Bit-port.vhd}
+    \caption{The 1-bit ALU component's ports.}
+    \label{listing:ALU1Bit-port}
+\end{listing}
+
+The 1-bit ALU component was first implemented. Listing \ref{listing:ALU1Bit-port} shows the ports
+that the ALU takes in. The input port \verb|s| represents the opcode, determining wether the ALU
+should execute an addition, subtraction, logical-and, or logical-or operation. The input ports
+\verb|a| and \verb|b| are the operands. The input port \verb|cin| is the carry-in from a previous
+ALU component, used for the addition and subtraction operations. It is unused when performing a
+logical-and or a logical-or operation.
+
+The output port \verb|sout| is the result of the operation that was executed. Output port
+\verb|cout| is used for addition and subtraction operations, connected to the next ALU component so
+that it can correctly calculate the result. Although \verb|cin|s and \verb|cout|s are not used for
+the logical-and and logical-or operations, it will still be calculated regardless. It will not
+affect the result since the two logical operations do not use the \verb|cin| input port.
+
+\newpage
+
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/ALU1Bit_datapath.vhd}
+    \caption{The 1-bit ALU component's datapath implementation.}
+    \label{listing:ALU1Bit-datapath}
+\end{listing}
+
+Listing \ref{listing:ALU1Bit-datapath} shows the implementation for each of the operations that the
+ALU supports. Firstly, the signals \verb|sout_adder|, \verb|sout_and|, and \verb|sout_or|,
+correspond to the results of each operations that the ALU supports, with \verb|sout_adder|
+corresponding to both the addition and subtraction operations. The signal \verb|inverse_b| is used
+to support subtraction. The results of all of the operations are calculated with the input port
+\verb|s| deciding which result to connect to the output port \verb|sout| by using the operations'
+respective opcodes.
+
+Notice that since the result of addition and subtraction operations both correspond to only one
+signal. This allows it so that only the $1^{st}$ bit is checked to be a $0$ since both operations'
+opcodes have their $1^{st}$ as a $0$. The motivation behind merging both operations into one signal
+is that binary subtraction in twos complement is equivalent to
+\begin{equation} \label{eq:binary_subtraction}
+    A - B = A + (\widetilde{B} + 1)
+\end{equation}
+therefore, the input port \verb|b| must simply be inverted to support the subtraction operation.
+Since the addition and subtraction's opcodes are different in the $0^{th}$ bit where subtraction has
+a $1$, \verb|b| can simply be \verb|XOR|ed by the $0^{th}$ bit of the opcode, which inverses
+\verb|b| when the opcode signals for a subtraction operation. This potential inverse of \verb|b| is
+connected to the \verb|inverse_b| signal, used only by the addition and subtraction operations, so
+that it does not affect the other operations in which the $0^{th}$ bit of the opcode is a $1$.
+
+The addition of the extra $1$ to $\widetilde{B}$ in \ref{eq:binary_subtraction} is not implemented
+in the 1-bit ALU since if the 16-bit ALU was implemented using sixteen 1-bit ALUs, it would add an
+extra 1 in each bit of the 16-bit ALU, producing the wrong result. The extra $1$ will come from the
+\verb|cin| of the first 1-bit ALU, again using the $0^{th}$ bit of the opcode, later shown in [REF
+to later figure here]. 
+
+The addition operation remains correct as the input port \verb|b| won't be inverted and there
+won't be an extra addition of one since the $0^{th}$ bit of the opcode will be $0$. The other two
+operations, logical-and and logical-or, are trivial by simply performing an \verb|AND| or an
+\verb|OR| between input ports \verb|a| and \verb|b|. The \verb|cout| output port is also somewhat
+trivial, implemented similarly to a normal Full Adder. However, it uses the signal \verb|inverse_b|
+to support subtraction.
+
+
+\section*{Experimentation}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+\newpage
+
+\section*{Results \& Discussion}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+\section*{Conclusions}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+% \newpage
+% 
+% \section*{References}
+% \noindent
+% [1]    Computer Organization 22104, EECS, University of Arkansas, “Lab 1,”  Sep. 17, 2024.
+% 
+% \noindent
+% [2]    Computer Organization 22104, EECS, University of Arkansas, “Lab 2,”  Sep. 24, 2024.
+% 
+% \newpage
+% 
+% \section*{Appendix}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{foo}
+%     \caption{
+%         Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur
+%         cupidatat.
+%     }
+%     \label{fig:foo}
+% \end{figure}
+% 
+% \newpage
+% 
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[height=0.4\textheight]{bar}
+%     \caption{Lorem ipsum something something shorter sentence}
+%     \label{fig:bar}
+% \end{figure}
+\end{document}
