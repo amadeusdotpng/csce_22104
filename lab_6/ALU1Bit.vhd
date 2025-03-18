@@ -13,45 +13,21 @@ entity ALU1Bit is
 end ALU1Bit;
 
 architecture Datapath of ALU1Bit is
-    component Mux4to1
-        port(
-            s: in std_logic_vector(1 downto 0);
-            x: in std_logic;
-            y: in std_logic;
-            z: in std_logic;
-            w: in std_logic;
-            b: out std_logic
-        );
-    end component;
-    component FullAdder
-        port(
-            a: in std_logic;
-            b: in std_logic;
-            cin: in std_logic;
-            sout: out std_logic;
-            cout: out std_logic
-        );
-    end component;
-    signal sout_fulladder : std_logic;
+	signal inverse_b      : std_logic;
+    signal sout_adder : std_logic;
     signal sout_and       : std_logic;
     signal sout_or        : std_logic;
 begin
-	fa : FullAdder port map (
-    	a => a,
-        b => b xor s(0),
-        cin => cin,
-        sout => sout_fulladder,
-        cout => cout
-    );
-    sout_and <= a and b;
-    sout_or  <= a or b;
+	inverse_b <= b xor s(0);
     
-	mux : Mux4to1 port map(
-    	s => s,
-        x => sout_fulladder,
-        y => sout_fulladder,
-        z => sout_and,
-        w => sout_or,
-        b => sout
-    );
+    sout_adder <= a xor inverse_b xor cin;
+    sout_and   <= a and b;
+    sout_or    <= a or  b;
+    
+    sout <= sout_adder when s(0) = '0' else
+            sout_and   when s = "10" else
+            sout_or    when s = "11";
+    
+    cout <= (a and inverse_b) or (cin and a) or (cin and inverse_b);
 end Datapath;
+
