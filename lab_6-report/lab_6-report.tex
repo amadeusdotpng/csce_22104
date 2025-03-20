@@ -134,7 +134,7 @@ affect the result since the two logical operations do not use the \verb|cin| inp
         tabsize=4,
         fontsize=\footnotesize,
         bgcolor=LightGray
-    ]{vhdl}{./media/ALU1Bit_datapath.vhd}
+    ]{vhdl}{./media/ALU1Bit-datapath.vhd}
     \caption{The 1-bit ALU component's datapath implementation.}
     \label{listing:ALU1Bit-datapath}
 \end{listing}
@@ -174,48 +174,138 @@ operations, logical-and and logical-or, are trivial by simply performing an \ver
 trivial, implemented similarly to a normal Full Adder. However, it uses the signal \verb|inverse_b|
 to support subtraction.
 
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/ALU16Bit-port.vhd}
+    \caption{The 16-bit ALU component's ports.}
+    \label{listing:ALU16Bit-port}
+\end{listing}
 
-\section*{Experimentation}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+Now that the 1-bit ALU has been implemented, the 16-bit ALU can now be constructed using sixteen
+1-bit ALU components. Listing \ref{listing:ALU16Bit-port} shows the 16-bit ALU component's ports.
+Notice that the input ports \verb|a| and \verb|b| and the output port \verb|sout| are now
+\verb|std_logic_vector|s with 16 bits each, since the data will be 16 bits long. The input port
+\verb|s| is unchanged as it still corresponds to the opcode. The output port \verb|cout| also
+reamins unchanged as it will be the \verb|cout| of the last 1-bit ALU component.
 
 \newpage
 
-\section*{Results \& Discussion}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/ALU16Bit-datapath.vhd}
+    \caption{The 16-bit ALU component's datapath implementation.}
+    \label{listing:ALU16Bit-datapath}
+\end{listing}
 
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+Listing \ref{listing:ALU16Bit-datapath} shows the implementation of the 16-bit ALU component, using
+a sixteen 1-bit ALU components. The opcode, in the input port \verb|s|, is connected to all of the
+1-bit ALU components since each 1-bit ALU component needs to know the operation to execute. Each bit
+of the input ports \verb|a| and \verb|b| as well as the output port \verb|sout| are connected to the
+corresponding 1-bit ALU component.
+
+To make the addition and subtraction operations work correctly, a 1-bit ALU component's \verb|cout|
+output port must be connected to the next 1-bit ALU component's \verb|cin| input port, acting as the
+carry. The last 1-bit ALU component's \verb|cout| output port is connected to the 16-bit ALU
+component's \verb|cout|. The first 1-bit ALU component's \verb|cin| is connected to the $0^{th}$ bit
+of the opcode. This is because if the operation to be executed is subtraction, which has the opcode
+of \verb|01|, must have an extra $1$ added as shown in equation \ref{eq:binary_subtraction}. If the
+operation is addition, the opcode would be \verb|00|, thus not adding an extra $1$, correctly
+calculating the result. The other two operations do not use the \verb|cin| and \verb|cout| ports,
+correctly calculating the results bit by bit.
+
+
+\section*{Experimentation}
+Both components were individually tested using a testbench. The 1-bit ALU component was tested by
+going through all of the operations, each with all possible combinations of the input ports
+\verb|a|, \verb|b| and \verb|cin|. The 16-bit ALU component was tested with a given list of inputs
+and manually verifying that the outputs are correct.
+
+\section*{Results \& Discussion}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{ALU1Bit-waveform}
+    \caption{The waveform for the 1-bit ALU component.}
+    \label{fig:ALU1Bit-waveform}
+\end{figure}
+
+The 1-bit ALU component works as expected. Figure \ref{fig:ALU1Bit-waveform} shows the waveform of
+the 1-bit ALU component, correctly outputting the results of each operation. For the subtraction
+operation, it is noteworthy that the output is unintuitive, especially shown when the signals
+\verb|A|, \verb|B|, and \verb|CarryIn| are all zeroes while the output shows the signal \verb|Sum|
+to be active. This is because \verb|B| is being inverted and then being "added" to zeroes, resulting
+in \verb|Sum| to be active. Though the implementation results in this peculiarity, it is required
+for the 16-bit ALU to work.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{ALU16Bit-waveform}
+    \caption{The waveform for the 16-bit ALU component. Signals that display a blank are zeroes.}
+    \label{fig:ALU16Bit-waveform}
+\end{figure}
+
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{|cc||cc|c|c|} 
+     \hline
+     S1 & S0 & A & B & Sout & Cout \\
+     \hline
+     0 & 0 & 100 & 230 & 330 & 0 \\ 
+     \hline
+     0 & 0 & -20 &  60 &  40 & 1 \\
+     \hline
+     0 & 0 &   1 &   1 &   2 & 0 \\
+     \hline
+     %             
+     0 & 1 & 500 & 340 & 160 & 1 \\ 
+     \hline
+     0 & 1 &  55 &  70 & -15 & 0 \\
+     \hline
+     0 & 1 &  -1 &  14 & -15 & 1 \\
+     \hline
+     %             
+     1 & 0 &  128 & 512 &   0 & 0 \\ 
+     \hline
+     1 & 0 & 3000 &   2 &   0 & 0 \\
+     \hline
+     1 & 0 & 5342 & 978 & 210 & 0 \\
+     \hline
+     %             
+     1 & 1 & 16 &    8 &   24 & 1 \\ 
+     \hline
+     1 & 1 &  0 & 2345 & 2345 & 0 \\
+     \hline
+     1 & 1 & -1 &    5 &   -1 & 1 \\
+     \hline
+    \end{tabular}
+    \caption{Results of the 16-bit ALU component testbench in table form.}
+    \label{table:ALU16Bit-waveform_table}
+\end{table}
+
+The 16-bit ALU component works as expected. Figure \ref{fig:ALU16Bit-waveform} shows the waveform of
+the 16-bit ALU component, correctly outputting the results of each operation. The waveform also
+displays the signal \verb|OpCode| in signed decimal, with the signals \verb|-2| and \verb|-1|
+corresponding to the opcodes \verb|10| and \verb|11| respectively. Table
+\ref{table:ALU16Bit-waveform_table} shows the waveform results in table form.
+
 
 \section*{Conclusions}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
-
+Both the 1-bit ALU and 16-bit ALU components worked correctly and displayed the expected behavior
+during testing. The knowledge learned from this lab was learning how to construct 1-bit ALU
+component that handled multiple operations determined by an opcode. Learning how subtraction works
+in binary was also a part of the lab, as well as learning how to construct a 16-bit ALU component
+using out of 1-bit ALU components.
 % \newpage
 % 
 % \section*{References}
