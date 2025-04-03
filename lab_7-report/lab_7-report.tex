@@ -1,0 +1,190 @@
+\documentclass[11pt]{report}
+\usepackage{textcomp}
+
+\usepackage{titlesec}
+\titlespacing*{\section}
+{0pt}{\baselineskip}{0em}
+\titlespacing*{\subsection}
+{0pt}{\baselineskip}{0em}
+
+\usepackage{geometry}
+\geometry{left=1in, right=1in, top=1in, textheight=9in}
+
+\usepackage{enumitem}
+\newlist{steps}{enumerate}{1}
+\setlist[steps, 1]{wide=0pt, leftmargin=\parindent, label=Step \arabic*:}
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+    \fancyhf{} % clear all header and footer fields
+    \fancyfoot[C]{\sffamily\fontsize{.75em}{.75em}\selectfont\thepage} % except the center
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+\usepackage{graphicx}
+\graphicspath{ {./media/} }
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{LightGray}{gray}{0.9}
+
+% make fancy title page
+\makeatletter
+\newcommand{\@labsection}{000}
+\newcommand{\labsection}[1]{
+    \renewcommand{\@labsection}{#1}
+}
+
+\newcommand{\@labnumber}{0}
+\newcommand{\labnumber}[1]{
+    \renewcommand{\@labnumber}{#1}
+}
+
+\newcommand{\@shortsubmitted}{1/1/70}
+\newcommand{\shortsubmitted}[1]{
+    \renewcommand{\@shortsubmitted}{#1}
+}
+
+\lfoot{\footnotesize \textit{University of Arkansas \\ EECS Department}}
+\rfoot{\footnotesize \textsl{\@shortsubmitted}}
+
+\renewcommand{\maketitle}{
+    \newgeometry{left=1in, right=1in, top=1.75in, textheight=8.25in}
+    \singlespacing
+    \begin{center}
+        {\huge \bf CSCE 22104} \\
+        \vspace{2.5em}
+        {\Large \bf Lab Report} \\
+        \vspace{2em}
+        \noindent\rule{20em}{0.4pt} \\
+        \vspace{1em}
+        {\Large \@author} \\
+        \vspace{.75em}
+        {\normalsize ID: 011019116} \\
+        \vspace{.75em}
+        {\normalsize Lab Section \@labsection} \\
+        \vspace{.75em}
+        {\normalsize Lab \@labnumber} \\
+    \end{center}
+    \newpage
+    \restoregeometry
+}
+
+\makeatother
+
+
+% TEXTWIDTH = 100
+\begin{document}
+\title{Lab Report 7}
+\author{Brent Marcus Orlina}
+
+\labsection{001}
+\labnumber{7}
+
+\shortsubmitted{4/2/25}
+
+\maketitle
+
+\section*{Introduction}
+This lab's goal was to implement a register file and CPU component from a given template. The
+register file should be able to hold 16-bit data with a total of 16 registers, making the register
+addresses 4-bits in length. The CPU component should take in a 16-bit instruction, with the first
+four bits representing the opcode used in the ALU, the second four bits representing the register
+destination \verb|rd|, and the third and fourth four bits representing the operand registers
+\verb|rs| and \verb|rt|. The ALU used in the CPU is from Lab 6, still supporting only four
+operations, meaning that the first two bits of the opcode is unused.
+
+\newpage
+
+\section*{Approach}
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/register-port.vhd}
+    \caption{The register file component's ports.}
+    \label{listing:register-port}
+\end{listing}
+
+
+\section*{Experimentation}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+\newpage
+
+\section*{Results \& Discussion}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+\section*{Conclusions}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+% \newpage
+% 
+% \section*{References}
+% \noindent
+% [1]    Computer Organization 22104, EECS, University of Arkansas, “Lab 1,”  Sep. 17, 2024.
+% 
+% \noindent
+% [2]    Computer Organization 22104, EECS, University of Arkansas, “Lab 2,”  Sep. 24, 2024.
+% 
+% \newpage
+% 
+% \section*{Appendix}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{foo}
+%     \caption{
+%         Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur
+%         cupidatat.
+%     }
+%     \label{fig:foo}
+% \end{figure}
+% 
+% \newpage
+% 
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[height=0.4\textheight]{bar}
+%     \caption{Lorem ipsum something something shorter sentence}
+%     \label{fig:bar}
+% \end{figure}
+\end{document}

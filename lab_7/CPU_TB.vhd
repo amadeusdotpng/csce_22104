@@ -2,19 +2,19 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 
-entity CPU_2214_Test is
-end entity CPU_2214_Test;
+entity CPU_TB is
+end entity CPU_TB;
 
 
-architecture mixed of CPU_2214_Test is
+architecture mixed of CPU_TB is
     constant tick : time := 100 ns;
     signal reset, clock : std_logic;
     signal instruction : std_logic_vector(15 downto 0);
 begin
-    CPU_2214_Sim : entity work.CPU_2214
+    uut : entity work.CPU
         port map(
-            clk		=> clock,
-            clear	=> reset,
+            clk		    => clock,
+            clear	    => reset,
             instruction => instruction
         );
 

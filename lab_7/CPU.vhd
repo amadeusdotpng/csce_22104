@@ -53,7 +53,7 @@ architecture Behavioral of CPU is
 
 begin
     -- Instruction Fetch
-    op <= instruction(15 downto 12);
+    OP <= instruction(15 downto 12);
     RD <= instruction(11 downto 8 );
     RS <= instruction( 7 downto 4 );
     RT <= instruction( 3 downto 0 );
@@ -80,7 +80,7 @@ begin
     port map(
         A => RSData,
         B => RTData,
-        S => OP,
+        S => OP(1 downto 0),
         Sout => Sout_ALU,
         Cout => cout
     );
