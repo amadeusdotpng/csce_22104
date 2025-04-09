@@ -1,0 +1,240 @@
+\documentclass[11pt]{report}
+\usepackage{textcomp}
+
+\usepackage{titlesec}
+\titlespacing*{\section}
+{0pt}{\baselineskip}{0em}
+\titlespacing*{\subsection}
+{0pt}{\baselineskip}{0em}
+
+\usepackage{geometry}
+\geometry{left=1in, right=1in, top=1in, textheight=9in}
+
+\usepackage{enumitem}
+\newlist{steps}{enumerate}{1}
+\setlist[steps, 1]{wide=0pt, leftmargin=\parindent, label=Step \arabic*:}
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+    \fancyhf{} % clear all header and footer fields
+    \fancyfoot[C]{\sffamily\fontsize{.75em}{.75em}\selectfont\thepage} % except the center
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+\usepackage{graphicx}
+\graphicspath{ {./media/} }
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{LightGray}{gray}{0.9}
+
+% make fancy title page
+\makeatletter
+\newcommand{\@labsection}{000}
+\newcommand{\labsection}[1]{
+    \renewcommand{\@labsection}{#1}
+}
+
+\newcommand{\@labnumber}{0}
+\newcommand{\labnumber}[1]{
+    \renewcommand{\@labnumber}{#1}
+}
+
+\newcommand{\@shortsubmitted}{1/1/70}
+\newcommand{\shortsubmitted}[1]{
+    \renewcommand{\@shortsubmitted}{#1}
+}
+
+\lfoot{\footnotesize \textit{University of Arkansas \\ EECS Department}}
+\rfoot{\footnotesize \textsl{\@shortsubmitted}}
+
+\renewcommand{\maketitle}{
+    \newgeometry{left=1in, right=1in, top=1.75in, textheight=8.25in}
+    \singlespacing
+    \begin{center}
+        {\huge \bf CSCE 22104} \\
+        \vspace{2.5em}
+        {\Large \bf Lab Report} \\
+        \vspace{2em}
+        \noindent\rule{20em}{0.4pt} \\
+        \vspace{1em}
+        {\Large \@author} \\
+        \vspace{.75em}
+        {\normalsize ID: 011019116} \\
+        \vspace{.75em}
+        {\normalsize Lab Section \@labsection} \\
+        \vspace{.75em}
+        {\normalsize Lab \@labnumber} \\
+    \end{center}
+    \newpage
+    \restoregeometry
+}
+
+\makeatother
+
+
+% TEXTWIDTH = 100
+\begin{document}
+\title{Lab Report 8}
+\author{Brent Marcus Orlina}
+
+\labsection{001}
+\labnumber{8}
+
+\shortsubmitted{4/9/25}
+
+\maketitle
+
+\section*{Introduction}
+This lab's goal was to implement a control block and sign extension components to support two
+additional instructions \verb|addi| and \verb|subi|, with opcodes \verb|0100| and \verb|0101|
+respectively. These two new instructions uses the last four bits of the instruction as an immediate
+value instead of an address for a register.
+
+The control block component should take in the first four bits of the instruction, representing the
+opcode of the instruction and output the two-bit opcode used in the ALU, and which source should be
+used in the second operand of the ALU, the data in register RT or the immediate value. The sign
+extension component should take in the last four bits of the instruction, representing as the
+immediate value, and extend it to 16 bits, taking into account its sign. The two components should
+then be able to be combined with the CPU previously created from Lab 7.
+
+\section*{Approach}
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/control.vhd}
+    \caption{The control block component's implementation.}
+    \label{listing:control}
+\end{listing}
+
+Listing \ref{listing:control} shows the control block component's implementation. It takes in the
+four-bit opcode through the input port \verb|op| and outputs the ALU opcode and ALU source through
+the output ports \verb|ctrl_alu_op| and \verb|ctrl_alu_src| respectively.
+
+In the architecture, the ALU opcode is simply the last two bits of the instruction opcode and the
+ALU source is the third bit of the instruction opcode. This works because the opcode for the
+immediate and non-immediate instructions of addition and subtraction only differ in the third bit.
+As a reminder, the opcodes for \verb|add| and \verb|sub| are \verb|0000| and \verb|0001| and the
+opcodes for \verb|addi| and \verb|subi| are \verb|0100| and \verb|0101|. This allows the control
+block to use the third bit to determine whether the content in register \verb|RT| or the immediate
+value should be used as the source of data for the ALU. The ALU opcode remains the same whether the
+content of register \verb|RT| or the immediate value.
+
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/immext.vhd}
+    \caption{The sign extension component's implementation.}
+    \label{listing:immext}
+\end{listing}
+
+Listing \ref{listing:immext} shows the sign extension component's implementation. It takes in the
+four-bit immediate value through the input port \verb|imm| and outputs the sign-extended through the
+output port \verb|ext|.
+
+In the architecture, it uses a 12-bit signal, \verb|extension|, as a placeholder for what value
+should be concatenated to \verb|imm| to extend it to 16 bits. For positive numbers, zeroes can
+simply be concatenated as the most significant bit to extend the number. For example the 4-bit
+positive number in two's complement, \verb|0011|, can be extended to 16 bits by simply concatenating
+twelve zeroes to the most significant bit resulting in \verb|0000 0000 0000 0011| which keeps the
+value.
+
+For negative numbers, a series of ones can be concatenated to the most significant bit to extend the
+number. For example, the 4-bit negative number in two's complement, \verb|1001|, $-7$ in decimal
+form, can be extended to 16 bits by simply concatenating twelve ones to the most significant bit,
+resulting in \verb|1111 1111 1111 1001| which is still $-7$ in decimal form. In two's complement, if
+the most significant bit is a \verb|1| then the number is a negative. This allows the sign-extension
+component to simply check whether the most significant bit is a \verb|1| or a \verb|0| to see if it
+must concatenate twelve ones or twelve zeros, as seen on line 11 of listing \ref{listing:immext}. On
+line 12, \verb|ext| is set as the concatenation of the determined extension and the input immediate
+value, done through the \verb|&| operator in VHDL.
+
+\newpage
+
+\section*{Experimentation}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+\newpage
+
+\section*{Results \& Discussion}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+\section*{Conclusions}
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
+Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
+proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
+reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
+adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
+commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+consectetur et est culpa et culpa duis.
+
+% \newpage
+% 
+% \section*{References}
+% \noindent
+% [1]    Computer Organization 22104, EECS, University of Arkansas, “Lab 1,”  Sep. 17, 2024.
+% 
+% \noindent
+% [2]    Computer Organization 22104, EECS, University of Arkansas, “Lab 2,”  Sep. 24, 2024.
+% 
+% \newpage
+% 
+% \section*{Appendix}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{foo}
+%     \caption{
+%         Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur
+%         cupidatat.
+%     }
+%     \label{fig:foo}
+% \end{figure}
+% 
+% \newpage
+% 
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[height=0.4\textheight]{bar}
+%     \caption{Lorem ipsum something something shorter sentence}
+%     \label{fig:bar}
+% \end{figure}
+\end{document}
