@@ -5,7 +5,7 @@ use ieee.std_logic_unsigned.all;
 entity ImmExt is
 	port(
     	imm : in std_logic_vector(3 downto 0);
-        ext : out std_logic_vector(15 downto 0);
+        ext : out std_logic_vector(15 downto 0)
      );
 end ImmExt;
 
