@@ -14,15 +14,15 @@ end CPU;
 architecture Behavioral of CPU is
     component ALU16Bit
     port(    
+        S : in std_logic_vector(1 downto 0);
         A : in std_logic_vector(15 downto 0);
         B : in std_logic_vector(15 downto 0);
-        S : in std_logic_vector(3 downto 0);
         Sout : out std_logic_vector(15 downto 0);
         Cout : out std_logic
     );
     end component;
     
-    component RegisterFile
+    component RegFile
     port(
         clk   : in std_logic; -- positive edge triggered clock
         clear : in std_logic; -- asynchronous reset
@@ -34,7 +34,7 @@ architecture Behavioral of CPU is
         b_addr : in std_logic_vector( 3 downto 0); -- register select for output b
         c_addr : in std_logic_vector( 3 downto 0); -- register select for output c
         
-        b_data : out std_logic_vector(15 downto 0); -- fiRSt output data port
+        b_data : out std_logic_vector(15 downto 0); -- first output data port
         c_data : out std_logic_vector(15 downto 0)  -- second output data port
     );
     end component;
@@ -59,7 +59,7 @@ begin
     RT <= instruction( 3 downto 0 );
 
     -- Instruction Decode
-    CPU_RegisteRS_0: RegFile
+    CPU_Registers_0: RegFile
     port map(
         clk   => clk,
         clear => clear,
@@ -78,9 +78,9 @@ begin
     -- Execute
     CPU_ALU_0: ALU16Bit
     port map(
+        S => OP(1 downto 0),
         A => RSData,
         B => RTData,
-        S => OP(1 downto 0),
         Sout => Sout_ALU,
         Cout => cout
     );

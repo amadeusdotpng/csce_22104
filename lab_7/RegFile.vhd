@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
-Entity RegisterFile is
+Entity RegFile is
     port(
         clk    : in std_logic; -- positive edge triggered clock
         clear  : in std_logic; -- asynchronous, active low reset
@@ -17,9 +17,9 @@ Entity RegisterFile is
         b_data : out std_logic_vector(15 downto 0); -- first output data port
         c_data : out std_logic_vector(15 downto 0)  -- second output data port
     );
-End RegisterFile;
+End RegFile;
 
-architecture syn of RegisterFile is
+architecture syn of RegFile is
     -- Define Register File array here
     type ram_type is array (15 downto 0) of std_logic_vector(15 downto 0);
     signal REG_FILE : ram_type;    
