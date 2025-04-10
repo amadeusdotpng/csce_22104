@@ -245,33 +245,50 @@ tested for given instructions for the CPU and were manually verified to be corre
 \newpage
 
 \section*{Results \& Discussion}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{CPU-waveform}
+    \caption{The waveform for the CPU component.}
+    \label{fig:CPU-waveform}
+\end{figure}
 
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{|l||c|c|c|c|c|} 
+     \hline
+     Instruction & op & rd & rs & rt & value (of rd) \\
+     \hline
+     \verb|ADD  R2, R1, R1| & \verb|0x0| & \verb|0x2| & \verb|0x1| & \verb|0x1| & \verb|2| \\ 
+     \hline                                                                             
+     \verb|ADDI R3, R2,  5| & \verb|0x4| & \verb|0x3| & \verb|0x2| & \verb|0x5| & \verb|7| \\
+     \hline                                                                             
+     %
+     \verb|SUB  R4, R3, R2| & \verb|0x1| & \verb|0x4| & \verb|0x3| & \verb|0x2| & \verb|5| \\
+     \hline                                                                             
+     \verb|SUBI R5, R4, -4| & \verb|0x5| & \verb|0x5| & \verb|0x4| & \verb|0xC| & \verb|9| \\ 
+     \hline                                                                             
+     %
+     \verb|AND  R6, R3, R5| & \verb|0x2| & \verb|0x6| & \verb|0x3| & \verb|0x5| & \verb|1| \\
+     \hline                                                                             
+     \verb|OR   R7, R5, R4| & \verb|0x3| & \verb|0x7| & \verb|0x5| & \verb|0x4| & \verb|13| \\
+     \hline
+     %             
+    \end{tabular}
+    \caption{Results of the CPU component testbench in table form.}
+    \label{table:CPU-waveform_table}
+\end{table}
+
+The CPU component works as expected. Figure \ref{fig:CPU-waveform} shows the waveform of the CPU
+component, correctly outputting the results of each operation. The waveform is in hex radix to
+easily show the instruction in the current clock cycle and teh fact that the ALU does not have any
+negative results. Table \ref{table:CPU-waveform_table} shows the waveform results in table form.
 
 \section*{Conclusions}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+Both the control block and signed-extension components worked correctly shown through the testbench
+for the CPU. The knowledge learned from this lab was learning how to construct a control block
+component and a signed-extension component to support two instructions, \verb|addi| and \verb|subi|
+that uses an immediate value. The CPU was also rewired to support the use of these components and
+the two new instructions.
 
 % \newpage
 % 
