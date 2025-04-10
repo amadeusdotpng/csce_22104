@@ -166,15 +166,81 @@ value, done through the \verb|&| operator in VHDL.
 
 \newpage
 
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/CPU-signals.vhd}
+    \caption{The signals used in the CPU implementation.}
+    \label{listing:CPU-signals}
+\end{listing}
+
+Listing \ref{listing:CPU-signals} shows the new signals used for the CPU implementation.
+The \verb|ALUOP| signal is used to determine the operation that the ALU executes, addition,
+subtraction, and-operation, or the or-operation. The signal \verb|ALUSource| is the control signal
+that determines which data should go into the second operand of the ALU. It is decided between the
+data from the \verb|RT| register, in the \verb|RTData| signal, or the sign-extended immediate value
+in the \verb|Immediate| signal. The ALUInput is the signal used to put the result of the decision
+made by the \verb|ALUSource|, connecting to the second operand of the ALU. Finally, the
+\verb|Immediate| signal holds the value of the sign-extended immediate value of the instruction.
+
+\newpage
+
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/CPU-decode.vhd}
+    \caption{The instruction decode phase of the CPU implementation.}
+    \label{listing:CPU-decode}
+\end{listing}
+
+Listing \ref{listing:CPU-decode} shows the instruction decode phase of the CPU implementation. This
+connects the \verb|OP| signal to the control block, which outputs the results to the \verb|ALUOP|
+and \verb|ALUSource| signals.
+
+This phase also connects the signal \verb|RT| to the immediate extension component, outputting the
+sign-extended immediate value. Normally, the signal \verb|RT|, which is the last four bits of the
+instruction, represents the address of the \verb|RT| register. However, since the immediate value is
+also in the last four bits of the instruction for the \verb|addi| and \verb|subi| instructions, it
+also represents the immediate value in these instructions. Since the operands of the ALU are 16-bits
+long, the input immediate value needs to be sign extended.
+
+Finally, the signal \verb|ALUInput| is determined whether it uses the data in the \verb|Immediate|
+signal or the \verb|RTData| signal. Since the immediate instructions \verb|addi| and \verb|subi|
+both have a \verb|1| in the third bit of their opcodes, which is what the \verb|ctrl_alu_src| looks
+at in the control block, the ALU should use the immediate value when \verb|ALUSource| is active and
+\verb|RTData| when it is inactive.
+
+\begin{listing}[h!]
+    \inputminted[
+        frame=lines,
+        breaklines,
+        linenos,
+        tabsize=4,
+        fontsize=\footnotesize,
+        bgcolor=LightGray
+    ]{vhdl}{./media/CPU-execute.vhd}
+    \caption{The execution phase of the CPU implementation.}
+    \label{listing:CPU-execute}
+\end{listing}
+
+Finally, \ref{listing:CPU-execute} shows the execution phase of the CPU implementation. The new
+\verb|ALUInput| and \verb|ALUOP| signals are connected to the ALU's \verb|B| and \verb|S| ports. The
+\verb|ALUInput| signal is connected to account for the use of the sign-extended immediate value for
+the \verb|addi| and \verb|subi| instructions.
+
 \section*{Experimentation}
-Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi
-Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
-Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est
-proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat
-reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident
-adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit
-commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-consectetur et est culpa et culpa duis.
+The components were tested by writing a testbench for the CPU component. The testbench written
+tested for given instructions for the CPU and were manually verified to be correct.
 
 \newpage
 
