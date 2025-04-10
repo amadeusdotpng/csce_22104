@@ -9,7 +9,7 @@ entity Control is
      );
 end Control;
 
-architecture Datapath of Control
+architecture Datapath of Control is
 begin
     ctrl_alu_op <= op(1 downto 0);
     ctrl_alu_src <= op(2);
