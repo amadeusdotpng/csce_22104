@@ -76,41 +76,52 @@ architecture Behavioral of CPU is
     
     -- Signals
     signal OP : std_logic_vector(3 downto 0);
-
-    signal RegisterSource : std_logic;
-    signal RegisterWrite  : std_logic;
     signal RS : std_logic_vector(3 downto 0);
     signal RT : std_logic_vector(3 downto 0);
     signal RD : std_logic_vector(3 downto 0);
-    signal RSData : std_logic_vector(15 downto 0);
-    signal RTData : std_logic_vector(15 downto 0);    
+
+    signal RegisterSource      : std_logic;
+    signal RegisterDestination : std_logic;
+    signal RegisterWrite       : std_logic;
+
+    signal Register2Address    : std_logic_vector(3 downto 0);
+    signal RSData              : std_logic_vector(15 downto 0);
+    signal Register2Data       : std_logic_vector(15 downto 0);    
 
     signal ALUSource : std_logic;
-    signal ALUOP : std_logic_vector(1 downto 0);
+    signal ALUOP     : std_logic_vector(1 downto 0);
     signal ALUInput  : std_logic_vector(15 downto 0);
-    signal ALUSout : std_logic_vector(15 downto 0);
-    signal cout    : std_logic;
+    signal ALUOutput : std_logic_vector(15 downto 0);
+    signal cout      : std_logic;
 
     signal Immediate : std_logic_vector(15 downto 0);
     
-    signal MemoryRead  : std_logic;
-    signal MemoryWrite : std_logic;
+    signal MemoryRead   : std_logic;
+    signal MemoryWrite  : std_logic;
     signal MemoryOutput : std_logic_vector(15 downto 0);
     
     signal WriteBack : std_logic_vector(15 downto 0);
 begin
     -- Instruction Fetch
     OP <= instruction(15 downto 12);
-    RD <= instruction(11 downto 8 );
-    RS <= instruction( 7 downto 4 );
-    RT <= instruction( 3 downto 0 );
+    RD <= instruction(11 downto  8);
+    RS <= instruction( 7 downto  4);
+    RT <= instruction( 3 downto  0);
 
     -- Instruction Decode
     ControlBlock : Control
     port map(
         op => OP,
-        ctrl_alu_op => ALUOP,
-        ctrl_alu_src => ALUSource
+
+        ctrl_alu_op  => ALUOP,
+        ctrl_alu_src => ALUSource,
+
+        ctrl_reg_src   => RegisterSource,
+        ctrl_reg_dst   => RegisterDestination,
+        ctrl_reg_write => RegisterWrite,
+        
+        ctrl_mem_read  => MemoryRead,
+        ctrl_mem_write => MemoryWrite
     );
 
     ImmediateExtension : ImmExt
@@ -118,6 +129,8 @@ begin
         imm => RT,
         ext => Immediate
     );
+
+    Register2Address <= RD when RegisterDestination = '1' else RT;
 
     CPU_Registers_0: RegFile
     port map(
@@ -129,13 +142,13 @@ begin
         load   => '1',
 
         b_addr => RS,
-        c_addr => RT,
+        c_addr => Register2Address,
 
         b_data => RSData,
-        c_data => RTData
+        c_data => Register2Data
     );
 
-    ALUInput <= Immediate when ALUSource = '1' else RTData;
+    ALUInput <= Immediate when ALUSource = '1' else Register2Data;
 
     -- Execute
     CPU_ALU_0: ALU16Bit
@@ -143,7 +156,7 @@ begin
         A => RSData,
         B => ALUInput,
         S => ALUOP,
-        Sout => ALUSout,
+        Sout => ALUOutput,
         Cout => cout
     );
     
@@ -151,12 +164,19 @@ begin
     MemoryBlock : Memory
     port map(
     	clk      => clk,
+
         read_en  => MemoryRead,
         write_en => MemoryWrite,
         
-        
+        addr => ALUOutput,
+
+        data_in  => Register2Data,
+        data_out => MemoryOutput,
+
+        mem_dump => '0'
     );
     
     -- WriteBack
-    WriteBack <= ALUSout when RegisterSource = '
+    WriteBack <= ALUOutput when RegisterSource = '1' else MemoryOutput;
+
 end Behavioral;
