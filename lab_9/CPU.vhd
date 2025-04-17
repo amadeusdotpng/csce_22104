@@ -139,7 +139,7 @@ begin
 
         a_addr => RD,
         a_data => WriteBack,
-        load   => '1',
+        load   => RegisterWrite,
 
         b_addr => RS,
         c_addr => Register2Address,
