@@ -12,6 +12,6 @@ end ImmExt;
 architecture Datapath of ImmExt is
 	signal extension : std_logic_vector(11 downto 0);
 begin
-    extension <= x"111" when imm(3) = '1' else x"000";
+    extension <= x"FFF" when imm(3) = '1' else x"000";
     ext <= extension & imm;
 end Datapath;
