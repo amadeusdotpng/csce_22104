@@ -22,7 +22,7 @@ architecture Behavioral of CPU is
     );
     end component;
     
-    component RegFile
+    component RegisterFile
     port(
         clk   : in std_logic; -- positive edge triggered clock
         clear : in std_logic; -- asynchronous reset
@@ -132,7 +132,7 @@ begin
 
     Register2Address <= RD when RegisterDestination = '1' else RT;
 
-    CPU_Registers_0: RegFile
+    CPU_Registers_0: RegisterFile
     port map(
         clk   => clk,
         clear => clear,
