@@ -69,13 +69,3 @@ begin
         wait;
     end process clock_p;
 end architecture mixed;
-
--- 0000 ADD
--- 0001 SUB
--- 0010 AND
--- 0011 OR
--- 0100 ADDI
--- 0101 SUBI
--- 1000 LW
--- 1100 SW
--- 0111 SLT
