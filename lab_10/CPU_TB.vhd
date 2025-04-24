@@ -40,7 +40,7 @@ begin
         instruction <= x"C404"; wait for tick;
 
         -- ADDI R6, R0, 4
-        instruction <= x"6604"; wait for tick;
+        instruction <= x"4604"; wait for tick;
 
         -- LW R7, 0(R6)
         instruction <= x"8760"; wait for tick;
