@@ -30,6 +30,9 @@ begin
         -- ADDI R4, R0, 2
         instruction <= x"4325"; wait for tick;
 
+        -- SLT R11, R3, R4
+        instruction <= x"7B34"; wait for tick;
+
         -- SW R3, 0(R0)
         instruction <= x"1432"; wait for tick;
 
@@ -47,15 +50,32 @@ begin
         
         -- ADD R9, R7, R8
         instruction <= x"3754"; wait for tick;
+
+        -- SLT R11, R3, R4
+        instruction <= x"7A01"; wait for tick;
+
+        -- SLT R11, R3, R4
+        instruction <= x"7A10"; wait for tick;
+
         wait;
     end process driver;
 
     clock_p : process is
     begin
-        for i in 0 to 6 loop
+        for i in 0 to 11 loop
             clock <= '1'; wait for tick/2;
             clock <= '0'; wait for tick/2;
         end loop;
         wait;
     end process clock_p;
 end architecture mixed;
+
+-- 0000 ADD
+-- 0001 SUB
+-- 0010 AND
+-- 0011 OR
+-- 0100 ADDI
+-- 0101 SUBI
+-- 1000 LW
+-- 1100 SW
+-- 0111 SLT
